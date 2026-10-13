@@ -12,6 +12,7 @@ This document specifies the mandatory workflows, constraints, and quality gates 
 - **Session Modes**:
   - `learning`: The user drives and writes the reasoning, the agent asks guiding questions.
   - `delivery`: The agent may draft code and plans, presenting rationale and trade-offs.
+- **Live Task Tracking (`todo.txt`)**: Keep `todo.txt` synchronized with code reality. When a deliverable or milestone is implemented and verified, mark it as completed (`x YYYY-MM-DD ...`) immediately. Never leave verified work marked as pending or untracked.
 
 ---
 
@@ -54,3 +55,13 @@ No commit may be generated if any of these checks fail or report unhandled error
 When working on specialized sub-domains:
 - **Anne Droid** (`profile/agents/anne-droid.md`): Consult for UX flow, client accessibility, or backend API contract changes that impact the UI. Delegate to Anne for frontend component styling, PWA camera/canvas interaction, or client-side tests on `feat/anne/*` branches.
 - Do not invoke Anne Droid for backend-only logic, database migrations, or Docker infrastructure.
+
+---
+
+## 5. Live Task Tracking (`todo.txt`)
+
+For multi-step engineering milestones and deliverables:
+- Maintain a standard, comment-free `todo.txt` in the repository root formatted for `tuxedo` / `todo.sh`.
+- Prioritize deliverables using standard priorities (`(A)`, `(B)`, `(C)`), projects (`+<component>`), and contexts (`@<area>`).
+- Keep `todo.txt` synchronized with code reality: when a deliverable is implemented and verified, mark it completed (`x YYYY-MM-DD ...`) immediately. Never leave verified work marked as pending or untracked.
+

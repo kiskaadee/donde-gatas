@@ -1,0 +1,17 @@
+x 2026-10-13 (A) Containerize PostGIS 17 + pgvector in docker-compose.yml with healthcheck +infra @db
+x 2026-10-13 (A) Implement async SQLAlchemy 2.0 engine and session factory in api/database.py +api @db
+x 2026-10-13 (A) Define Sculpture, CheckIn, and User ORM models with GeoAlchemy2 and pgvector in api/models.py +api @db
+x 2026-10-13 (A) Initialize Alembic and create initial schema migration in api/alembic/ +api @db
+x 2026-10-13 (A) Create seed script and populate 3 historical cat sculptures in api/scripts/seed_sculptures.py +api @db
+x 2026-10-13 (A) Establish automated test suite with pytest-asyncio and SQLite/Postgres harness in api/tests/ +test @api
+x 2026-10-13 (A) Draft Architectural Decision Record for Jev Cascade Triage in docs/adr/001-jev-cascade-triage.md +docs @arch
+(A) Implement Pydantic v2 domain schemas matching openapi_unified.yaml in api/schemas.py +api @backend
+(A) Implement IdentityProvider protocol and mock local auth provider in api/auth.py +api @auth
+(A) Implement Sculptures CRUD router with spatial GeoJSON serialization in api/routers/sculptures.py +api @backend
+(B) Implement Check-In verification engine with spatial distance threshold and cosine similarity threshold in api/services/checkin.py +api @backend
+(B) Implement Check-In router with idempotency and streak tracking in api/routers/checkins.py +api @backend
+(B) Implement Jev lightweight triage adapter protocol and mock fallback in api/services/triage.py +api @ai
+(C) Implement consensus engine for multi-user spatial cluster voting in api/services/consensus.py +api @backend
+(C) Implement public catalog and leaderboard endpoints in api/routers/catalog.py +api @backend
+(C) Write comprehensive integration tests for Check-In flow, edge cases, and spatial rejection in api/tests/test_checkins.py +test @api
+(D) Consult Anne Droid to review OpenAPI schemas against PWA client camera and canvas contract +pwa @frontend
