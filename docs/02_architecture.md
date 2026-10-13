@@ -49,10 +49,16 @@ Validates "Check-ins" using client-side edge embeddings (MobileNetV2 1280-dimens
 ### 4. Interaction & Collection Service
 Manages the many-to-many relationship between users and sculptures (unlocked achievements, captured photo galleries, and cultural audio/insights).
 
-### 5. Crowdsourcing & Ticket Service
+### 5. Crowdsourcing & Ticket Service (Cascade Triage)
 Manages citizen reports for moved, missing, or altered sculptures:
-- Accepts coordinates, observed status, verification photo, and optional commentary.
-- Groups overlapping submissions into spatial clusters ($\le 20\text{ m}$ radius) over a 48-hour window.
+- Accepts coordinates, observed status, verification photo, and optional free-form commentary.
+- **Cascade Triage Architecture**:
+  1. **Tier 1 (Deterministic Math)**: Rejects physical impossibilities via spatio-temporal velocity checks ($v \le 120\text{ km/h}$).
+  2. **Tier 2 (System One Decision Engine - Jev)**: Free-form commentary and report metadata are processed via a pluggable `TriageProvider` adapter (backed by TypeSafe AI's non-autoregressive **Jev** model):
+     - `is_spam` (`noul`): Fast boolean probability filter to eliminate noise before human review.
+     - `category` (`choice`): Categorizes reports into municipal work, temporary festival relocation, vandalism, theft, or empty pedestal.
+     - `credibility` (`score`): Calibrated plausibility scoring used to scale reporter vote weight.
+  3. **Tier 3 (Spatial Clustering & Consensus)**: Groups verified submissions into spatial clusters ($\le 20\text{ m}$ radius) over a 48-hour window.
 
 ### 6. Location Tracker Service (The Oracle) & Hybrid Consensus Engine
 Computes the single source of truth (SSOT) location and status of each sculpture:
@@ -67,4 +73,6 @@ Computes the single source of truth (SSOT) location and status of each sculpture
 *   **PWA Priority:** Chosen for immediate access (QR/URL) over the friction of app store downloads, especially for tourists.
 *   **SSO Adapter Pattern:** Isolates authentication provider logic behind a clean contract, allowing local offline testing and easy migration to alternative auth providers (e.g. Authelia) without touching business logic.
 *   **Hybrid Consensus Threshold:** Combines automated confidence scoring ($\ge 3.0$) with human-in-the-loop moderator verification for ambiguous edge cases, balancing real-time responsiveness with catalog integrity.
+*   **Cascade Triage & Non-Autoregressive Decision Engine (Jev):** Free-form crowdsourced reports and device fallback queues are pre-triaged using TypeSafe AI's Jev model via a pluggable `TriageProvider` adapter. By choosing a non-autoregressive decision model over generative LLMs, the system achieves sub-200ms latency, calibrated probabilities, and guaranteed typed responses without heavy server-side GPU/RAM requirements. Code-level velocity math and client-side MobileNetV2 feature embeddings remain untouched.
+
 

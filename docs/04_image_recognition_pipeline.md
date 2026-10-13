@@ -45,8 +45,8 @@ graph TD
 
 ### ADR-004: Asynchronous Moderation Queue for Device Failures
 * **Context:** Some older or budget smartphones may throw exceptions when attempting WebAssembly compilation or WebGL initialization, preventing local vector generation.
-* **Decision:** If the PWA catches an ONNX initialization error, it degrades gracefully by falling back to an **Asynchronous Moderation Queue**. It uploads the raw GPS coordinates and the compressed photo to the `/reports` endpoint. The check-in is set to "Pending" until an admin manually approves it.
-* **Rationale:** Protects the server from loading resource-heavy inference engines (like PyTorch or full onnxruntime) on the backend, maintaining strict memory limits while still ensuring all users can complete check-ins.
+* **Decision:** If the PWA catches an ONNX initialization error, it degrades gracefully by falling back to an **Asynchronous Moderation Queue**. It uploads the raw GPS coordinates and the compressed photo to the `/reports` endpoint. The check-in is set to "Pending" until an admin manually approves it or the pluggable Jev triage engine verifies the report's credibility.
+* **Rationale:** Protects the server from loading resource-heavy inference engines (like PyTorch or full onnxruntime) on the backend, maintaining strict memory limits while still ensuring all users can complete check-ins. Combined with non-autoregressive decision models (Jev), fallback tickets can be pre-scored for credibility without human bottlenecking.
 
 ### ADR-005: Progressive Dataset Rollout via Admin Seeding Tool
 * **Context:** Collecting, photographing, and seeding reference vectors for all 38 cats on day one is a bottleneck that delays MVP deployment.
