@@ -1,6 +1,8 @@
 services:
   pg_database:
-    image: postgres:17
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
     container_name: postgres_db
     restart: always
     environment:
