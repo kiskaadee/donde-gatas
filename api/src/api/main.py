@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.core.config import settings
 from api.models.auth import DevTokenRequest, LoginResponse
+from api.routers import sculptures
 from api.services.auth.service import AuthService
 
 app = FastAPI(
@@ -19,6 +20,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register routers
+app.include_router(sculptures.router)
 
 auth_service = AuthService()
 

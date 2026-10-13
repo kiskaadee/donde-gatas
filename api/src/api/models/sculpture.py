@@ -47,10 +47,14 @@ class SculptureDetails(Sculpture):
     Extended sculpture model containing cultural details, unlocked content, and audio resources.
     """
 
-    description: str = Field(..., description="Public cultural description of the sculpture.")
-    audio_url: HttpUrl = Field(..., description="Direct link to the audio guide resource.")
-    unlocked_content: str = Field(
-        ..., description="Extended history/curation unlocked upon checking in."
+    description: str | None = Field(
+        default=None, description="Public cultural description of the sculpture."
+    )
+    audio_url: HttpUrl | None = Field(
+        default=None, description="Direct link to the audio guide resource."
+    )
+    unlocked_content: str | None = Field(
+        default=None, description="Extended history/curation unlocked upon checking in."
     )
 
     model_config = {

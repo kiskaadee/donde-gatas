@@ -7,7 +7,7 @@ x 2026-10-13 (A) Establish automated test suite with pytest-asyncio and SQLite/P
 x 2026-10-13 (A) Draft Architectural Decision Record for Jev Cascade Triage in docs/adr/001-jev-cascade-triage.md +docs @arch
 (A) Implement Pydantic v2 domain schemas matching openapi_unified.yaml in api/schemas.py +api @backend
 (A) Implement IdentityProvider protocol and mock local auth provider in api/auth.py +api @auth
-(A) Implement Sculptures CRUD router with spatial GeoJSON serialization in api/routers/sculptures.py +api @backend
+x 2026-10-13 (A) Implement Sculptures read router with spatial coordinate serialization in api/routers/sculptures.py +api @backend
 (B) Implement Check-In verification engine with spatial distance threshold and cosine similarity threshold in api/services/checkin.py +api @backend
 (B) Implement Check-In router with idempotency and streak tracking in api/routers/checkins.py +api @backend
 (B) Implement Jev lightweight triage adapter protocol and mock fallback in api/services/triage.py +api @ai
