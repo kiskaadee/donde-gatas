@@ -53,6 +53,51 @@ paths:
         '401':
           description: Invalid token provided.
 
+  /auth/dev-token:
+    post:
+      summary: Development SSO Bypass Token Generation
+      description: |
+        Generates a valid signed JWT for a specified email without contacting external identity providers.
+        Available only when server environment is configured for development or testing (ENV != 'production').
+      operationId: getDevToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: explorer@example.com
+                name:
+                  type: string
+                  example: Local Explorer
+      responses:
+        '200':
+          description: Test token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - access_token
+                  - token_type
+                  - expires_in
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  expires_in:
+                    type: integer
+        '403':
+          description: Endpoint disabled in production mode.
+
   /users/me:
     get:
       summary: Retrieve Current User Profile

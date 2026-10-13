@@ -63,39 +63,73 @@ graph TD
 ## 3. Data Schemas & API Contracts
 
 ### Database Schema (SQL)
-We store the reference vectors using the `pgvector` extension and the physical locations using the `postgis` extension.
+We store reference vectors using the `pgvector` extension and physical locations using the `postgis` extension.
 
 ```sql
 -- Ensure extensions are loaded
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- Sculptures table storing baseline vectors
+-- Users table
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    trust_score FLOAT NOT NULL DEFAULT 0.5 CHECK (trust_score >= 0.0 AND trust_score <= 1.0),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sculptures table storing baseline vectors and spatial locations (SRID 4326)
 CREATE TABLE sculptures (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
+    artist VARCHAR(255) NOT NULL,
+    year INTEGER NOT NULL CHECK (year >= 1900),
     description TEXT,
-    location GEOGRAPHY(Point, 4326) NOT NULL, -- Spatial coordinates (SRID 4326)
+    audio_url VARCHAR(512),
+    unlocked_content TEXT,
+    status VARCHAR(50) NOT NULL DEFAULT 'on-site' CHECK (status IN ('on-site', 'moved', 'missing')),
+    location GEOGRAPHY(Point, 4326) NOT NULL,
     embedding vector(1280) NOT NULL,         -- L2-Normalized MobileNetV2 embedding vector
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Check-in Records table (Explorer's Gallery)
 CREATE TABLE check_ins (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
-    sculpture_id UUID REFERENCES sculptures(id),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sculpture_id UUID NOT NULL REFERENCES sculptures(id) ON DELETE CASCADE,
     captured_at TIMESTAMP WITH TIME ZONE NOT NULL,
     photo_url VARCHAR(512) NOT NULL,          -- URL pointing to the compressed 80KB photo
-    similarity_score FLOAT NOT NULL,          -- The cosine distance calculated at check-in
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    similarity_score FLOAT NOT NULL CHECK (similarity_score >= 0.0 AND similarity_score <= 1.0),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_user_sculpture UNIQUE (user_id, sculpture_id)
 );
 
--- Create a spatial index for fast proximity queries
-CREATE INDEX idx_sculptures_location ON sculptures USING GIST (location);
+-- Crowdsourced Tickets / Reports table
+CREATE TABLE tickets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    reporter_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sculpture_id UUID NOT NULL REFERENCES sculptures(id) ON DELETE CASCADE,
+    reported_status VARCHAR(50) NOT NULL CHECK (reported_status IN ('on-site', 'moved', 'missing')),
+    location GEOGRAPHY(Point, 4326) NOT NULL,
+    photo_url VARCHAR(512),
+    description VARCHAR(500),
+    status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    reporter_trust_score FLOAT NOT NULL CHECK (reporter_trust_score >= 0.0 AND reporter_trust_score <= 1.0),
+    notes VARCHAR(300),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP WITH TIME ZONE
+);
 
--- Create an HNSW index for fast vector cosine similarity search
+-- Spatial and Vector Indexes
+CREATE INDEX idx_sculptures_location ON sculptures USING GIST (location);
 CREATE INDEX idx_sculptures_embedding ON sculptures USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX idx_tickets_location ON tickets USING GIST (location);
+CREATE INDEX idx_tickets_sculpture_status ON tickets (sculpture_id, status);
+CREATE INDEX idx_check_ins_user ON check_ins (user_id);
 ```
 
 ### API Endpoint (OpenAPI Fragment)
