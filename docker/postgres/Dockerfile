@@ -1,18 +1,10 @@
-FROM postgis/postgis:17-3.5
+FROM pgvector/pgvector:pg17
 
-# Install build dependencies and pgvector
+# Install official PostGIS 3 for PostgreSQL 17
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        postgresql-17-pgvector || \
-        (apt-get install -y --no-install-recommends git build-essential postgresql-server-dev-17 && \
-         cd /tmp && \
-         git clone --branch v0.8.0 https://github.com/pgvector/pgvector.git && \
-         cd pgvector && \
-         make && \
-         make install && \
-         apt-get remove -y git build-essential postgresql-server-dev-17 && \
-         apt-get autoremove -y && \
-         rm -rf /tmp/pgvector) && \
+        postgresql-17-postgis-3 \
+        postgresql-17-postgis-3-scripts && \
     rm -rf /var/lib/apt/lists/*
 
 COPY docker/postgres/init-extensions.sql /docker-entrypoint-initdb.d/01-init-extensions.sql

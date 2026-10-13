@@ -7,8 +7,8 @@ __pycache__/
 .mypy_cache/
 
 .env
-.env.*
-!.env.example    # Keep templates tracked
+# Keep templates tracked
+!.env.example
 *.pem
 *.key
 client_secret*.json
