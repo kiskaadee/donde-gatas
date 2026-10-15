@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
-from api.main import auth_service
+from api.routers.deps import auth_service
 
 
 @pytest.mark.asyncio
